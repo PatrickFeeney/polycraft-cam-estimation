@@ -16,6 +16,7 @@ def get_p_json_pts(p_json_name):
     with open(p_json_name, "r") as f:
         p_json = json.load(f)
         pts = np.empty((0, 3))
-        for pos, _ in p_json["map"].items():
-            pts = np.concatenate((pts, np.fromstring(pos, sep=",")[np.newaxis]), axis=0)
+        for pos, data in p_json["map"].items():
+            if data["name"] != "minecraft:air":
+                pts = np.concatenate((pts, np.fromstring(pos, sep=",")[np.newaxis]), axis=0)
         return pts.T
