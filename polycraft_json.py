@@ -6,7 +6,7 @@ import numpy as np
 def get_p_json_cam(p_json_name):
     with open(p_json_name, "r") as f:
         p_json = json.load(f)
-        player_pos = p_json["player"]["pos"]
+        player_pos = np.array(p_json["player"]["pos"], dtype=float)
         yaw = p_json["player"]["yaw"]
         pitch = p_json["player"]["pitch"]
         return player_pos, yaw, pitch
