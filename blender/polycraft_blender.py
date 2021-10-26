@@ -41,4 +41,4 @@ for pt in pts.T:
 player_pos, yaw, pitch = polycraft_json.get_p_json_cam(json_name)
 player_pos[1] += 1.1
 cam.location = player_pos
-cam.rotation_euler = mathutils.Euler((0, radians(yaw), 0), "ZYX")
+cam.rotation_euler = mathutils.Euler((radians(pitch), radians(180 - yaw), 0), "ZYX")
