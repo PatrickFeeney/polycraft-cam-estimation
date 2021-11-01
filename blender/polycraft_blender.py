@@ -2,11 +2,10 @@ from math import radians
 from pathlib import Path
 import sys
 
-import numpy as np
-from PIL import Image
-
 import bpy
 import mathutils
+
+from image import image_to_np
 
 sys.path.append("..")
 
@@ -49,10 +48,6 @@ cam.rotation_euler = mathutils.Euler((radians(pitch), radians(180 - yaw), 0), "Z
 render_path = Path("temp.png")
 bpy.ops.render.render()
 bpy.data.images["Render Result"].save_render(render_path)
-# create numpy array with grayscale image data
-render_img = np.asarray(Image.open(render_path)).copy()
-# threshold values
-render_img[render_img < 128] = 0
-render_img[render_img >= 128] = 255
+np_render = image_to_np(render_path)
 # remove temp file
 render_path.unlink()
