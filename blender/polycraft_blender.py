@@ -30,24 +30,37 @@ def create_prefab(prefab, pt):
     view_layer.active_layer_collection.collection.objects.link(obj)
 
 
+def load_env(json_name, ignore_blocks=["air"]):
+    # add prefab cubes to the scene
+    pts = polycraft_json.get_p_json_pts(json_name)
+    for pt in pts.T:
+        create_prefab(norm_cube, pt)
+
+
+def load_cam(json_name, player_y_offset=1.1):
+    # import camera parameters
+    player_pos, yaw, pitch = polycraft_json.get_p_json_cam(json_name)
+    player_pos[1] += player_y_offset
+    cam.location = player_pos
+    cam.rotation_euler = mathutils.Euler((radians(pitch), radians(180 - yaw), 0), "ZYX")
+
+
+def render_to_np():
+    # render image and save temporarily
+    render_path = Path("temp.png")
+    bpy.ops.render.render()
+    bpy.data.images["Render Result"].save_render(render_path)
+    np_render = image_to_np(render_path)
+    # remove temp file
+    render_path.unlink()
+    return np_render
+
+
 # get file paths
 data_num = 1
 data_folder = Path("../unlabeled_data")
 json_name = data_folder / ("%i.json" % (data_num, ))
 image_name = data_folder / ("%i.png" % (data_num, ))
-# add prefab cubes to the scene
-pts = polycraft_json.get_p_json_pts(json_name)
-for pt in pts.T:
-    create_prefab(norm_cube, pt)
-# import camera parameters
-player_pos, yaw, pitch = polycraft_json.get_p_json_cam(json_name)
-player_pos[1] += 1.1
-cam.location = player_pos
-cam.rotation_euler = mathutils.Euler((radians(pitch), radians(180 - yaw), 0), "ZYX")
-# render image and save temporarily
-render_path = Path("temp.png")
-bpy.ops.render.render()
-bpy.data.images["Render Result"].save_render(render_path)
-np_render = image_to_np(render_path)
-# remove temp file
-render_path.unlink()
+# load Polycraft data
+load_env(json_name)
+load_cam(json_name)
