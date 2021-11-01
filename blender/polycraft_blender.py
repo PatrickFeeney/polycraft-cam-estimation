@@ -42,3 +42,6 @@ player_pos, yaw, pitch = polycraft_json.get_p_json_cam(json_name)
 player_pos[1] += 1.1
 cam.location = player_pos
 cam.rotation_euler = mathutils.Euler((radians(pitch), radians(180 - yaw), 0), "ZYX")
+# render image and save temporarily
+bpy.ops.render.render()
+bpy.data.images["Render Result"].save_render("temp.png")
