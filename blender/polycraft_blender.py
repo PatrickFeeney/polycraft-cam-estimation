@@ -2,6 +2,9 @@ from math import radians
 from pathlib import Path
 import sys
 
+import numpy as np
+from PIL import Image
+
 import bpy
 import mathutils
 
@@ -43,5 +46,13 @@ player_pos[1] += 1.1
 cam.location = player_pos
 cam.rotation_euler = mathutils.Euler((radians(pitch), radians(180 - yaw), 0), "ZYX")
 # render image and save temporarily
+render_path = Path("temp.png")
 bpy.ops.render.render()
-bpy.data.images["Render Result"].save_render("temp.png")
+bpy.data.images["Render Result"].save_render(render_path)
+# create numpy array with grayscale image data
+render_img = np.asarray(Image.open(render_path)).copy()
+# threshold values
+render_img[render_img < 128] = 0
+render_img[render_img >= 128] = 255
+# remove temp file
+render_path.unlink()
