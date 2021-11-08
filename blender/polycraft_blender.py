@@ -5,7 +5,9 @@ import sys
 import bpy
 import mathutils
 
-from image import image_to_np
+sys.path.append(".")
+
+from image import image_to_np, image_error
 
 sys.path.append("..")
 
@@ -30,9 +32,9 @@ def create_prefab(prefab, pt):
     view_layer.active_layer_collection.collection.objects.link(obj)
 
 
-def load_env(json_name, ignore_blocks=["air"]):
+def load_env(json_name, include_blocks):
     # add prefab cubes to the scene
-    pts = polycraft_json.get_p_json_pts(json_name)
+    pts = polycraft_json.get_p_json_pts(json_name, include_blocks)
     for pt in pts.T:
         create_prefab(norm_cube, pt)
 
@@ -47,20 +49,24 @@ def load_cam(json_name, player_y_offset=1.1):
 
 def render_to_np():
     # render image and save temporarily
-    render_path = Path("temp.png")
+    render_path = "temp.png"
     bpy.ops.render.render()
     bpy.data.images["Render Result"].save_render(render_path)
     np_render = image_to_np(render_path)
     # remove temp file
-    render_path.unlink()
+    Path(render_path).unlink()
     return np_render
 
 
-# get file paths
+# get file paths and load label
 data_num = 1
-data_folder = Path("../unlabeled_data")
-json_name = data_folder / ("%i.json" % (data_num, ))
-image_name = data_folder / ("%i.png" % (data_num, ))
+unlabeled_data = Path("../unlabeled_data")
+json_name = unlabeled_data / ("%i.json" % (data_num, ))
+labeled_data = Path("../manual_segments/crafting_table")
+label_img = image_to_np(labeled_data / ("%i.png" % (data_num, )))
 # load Polycraft data
-load_env(json_name)
+load_env(json_name, ["minecraft:crafting_table"])
 load_cam(json_name)
+# render and compare to label
+np_render = render_to_np()
+print(image_error(label_img, np_render))
