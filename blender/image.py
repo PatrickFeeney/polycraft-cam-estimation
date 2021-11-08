@@ -4,11 +4,13 @@ from PIL import Image
 
 def image_to_np(img_path):
     # create numpy array with grayscale image data
-    render_img = np.asarray(Image.open(img_path)).copy()
+    img = np.asarray(Image.open(img_path), dtype=np.int32).copy()
+    while len(img.shape) > 2:
+        img = img[:, :, 0]
     # threshold values
-    render_img[render_img < 128] = 0
-    render_img[render_img >= 128] = 255
-    return render_img
+    img[img < 128] = 0
+    img[img >= 128] = 255
+    return img
 
 
 def image_error(img1, img2):
