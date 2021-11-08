@@ -39,12 +39,13 @@ def load_env(json_name, include_blocks):
         create_prefab(norm_cube, pt)
 
 
-def load_cam(json_name, player_y_offset=1.1):
+def load_cam(json_name, fov_degrees=70.8, player_y_offset=1.1):
     # import camera parameters
     player_pos, yaw, pitch = polycraft_json.get_p_json_cam(json_name)
     player_pos[1] += player_y_offset
     cam.location = player_pos
     cam.rotation_euler = mathutils.Euler((radians(pitch), radians(180 - yaw), 0), "ZYX")
+    cam.angle = radians(fov_degrees)
 
 
 def render_to_np():
