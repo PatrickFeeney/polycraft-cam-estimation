@@ -14,4 +14,11 @@ def image_to_np(img_path):
 
 
 def image_error(img1, img2):
-    return (np.abs(img1 - img2) / 255).sum()
+    # intersection over union
+    intersect = img1
+    intersect[img2 < 1] = 0
+    union = img1
+    union[img2 > 0] = 1
+    if np.sum(union) == 0:
+        return 1
+    return np.sum(intersect)/np.sum(union)
