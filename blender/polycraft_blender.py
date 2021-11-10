@@ -10,9 +10,6 @@ import numpy as np
 sys.path.append(".")
 
 from image import image_to_np, image_error
-
-sys.path.append("..")
-
 import polycraft_json
 
 
