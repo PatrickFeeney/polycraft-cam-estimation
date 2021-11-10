@@ -6,6 +6,7 @@ import bpy
 import mathutils
 
 import numpy as np
+import pandas as pd
 
 sys.path.append(".")
 
@@ -62,15 +63,14 @@ def render_to_np():
 # search space for parameters
 n_fov = 10
 n_y_offset = 10
-fov_grid, y_offset_grid = np.meshgrid(
-    np.linspace(65, 80, num=n_fov),
-    np.linspace(1, 1.2, num=n_y_offset),
-    indexing="ij",
-)
+fovs = np.linspace(65, 80, num=n_fov)
+y_offsets = np.linspace(1, 1.2, num=n_y_offset)
 # data to use
 data_nums = [1, 7, 50, 52, 90]
+# store output in array
+im_errors = np.empty((n_fov * n_y_offset, len(data_nums) + 2))
 
-for data_num in data_nums:
+for i, data_num in enumerate(data_nums):
     # get file paths and load label
     unlabeled_data = Path("../unlabeled_data")
     json_name = unlabeled_data / ("%i.json" % (data_num, ))
@@ -79,9 +79,21 @@ for data_num in data_nums:
     # load Polycraft data into Blender scene
     load_scene()
     load_env(json_name, ["minecraft:crafting_table"])
-    for i in range(n_fov):
-        for j in range(n_y_offset):
-            load_cam(json_name, fov_grid[i, j], y_offset_grid[i, j])
+    for j, fov in enumerate(fovs):
+        for k, y_offset in enumerate(y_offsets):
+            load_cam(json_name, fov, y_offset)
             # render and compare to label
             np_render = render_to_np()
-            print(image_error(label_img, np_render))
+            im_error = image_error(label_img, np_render)
+            # store output
+            row = j * n_y_offset + k
+            im_errors[row, 0] = fov
+            im_errors[row, 1] = y_offset
+            im_errors[row, i + 2] = im_error
+# calculate means
+im_error_means = np.mean(im_errors[:, 2:], axis=1)
+im_errors = np.insert(im_errors, [2], im_error_means[:, np.newaxis], axis=1)
+# save output
+data_nums_str = [str(num) for num in data_nums]
+im_errors_df = pd.DataFrame(im_errors, columns=["FoV", "Y-Offset", "Mean IoU", *data_nums_str])
+im_errors_df.to_csv("cam_param_search.csv", index=False)
