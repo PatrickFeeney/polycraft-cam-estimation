@@ -9,6 +9,7 @@ flake8 = "*"
 pep8-naming = "*"
 scipy = "*"
 matplotlib = "*"
+pandas = "*"
 
 [dev-packages]
 
