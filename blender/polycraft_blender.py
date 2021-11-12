@@ -38,7 +38,7 @@ def load_env(json_name, include_blocks):
         create_prefab(norm_cube, pt)
 
 
-def load_cam(json_name, fov_degrees=70.8, player_y_offset=1.1):
+def load_cam(json_name, fov_degrees=71.2666, player_y_offset=1.1066):
     # import camera parameters
     player_pos, yaw, pitch = polycraft_json.get_p_json_cam(json_name)
     player_pos[1] += player_y_offset
@@ -63,8 +63,8 @@ def render_to_np():
 # search space for parameters
 n_fov = 10
 n_y_offset = 10
-fovs = np.linspace(65, 80, num=n_fov)
-y_offsets = np.linspace(1, 1.2, num=n_y_offset)
+fovs = np.linspace(71, 71.6, num=n_fov)
+y_offsets = np.linspace(1.10, 1.13, num=n_y_offset)
 # data to use
 data_nums = [1, 7, 50, 52, 90]
 # store output in array
