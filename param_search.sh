@@ -1,2 +1,3 @@
 cd blender
-blender --background --python polycraft_blender.py
+blender --background --python cam_param_search.py
+python3 param_analysis.py
