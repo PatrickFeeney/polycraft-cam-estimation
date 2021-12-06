@@ -22,3 +22,9 @@ def image_error(img1, img2):
     if np.sum(union) == 0:
         return 1
     return np.sum(intersect)/np.sum(union)
+
+
+def percent_novel(img):
+    img[img < 128] = 0
+    img[img >= 128] = 1
+    return np.mean(img)
