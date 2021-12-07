@@ -26,13 +26,25 @@ def create_prefab(prefab, pt):
     view_layer.active_layer_collection.collection.objects.link(obj)
 
 
-def load_env(p_json, include_blocks):
+def load_env(p_json, novel_blocks):
     # get prefab references
+    norm_agent = bpy.data.objects["NormalAgent"].data
     norm_cube = bpy.data.objects["NormalCube"].data
-    # add prefab cubes to the scene
-    pts = polycraft_json.get_p_json_pts(p_json, include_blocks)
-    for pt in pts.T:
-        create_prefab(norm_cube, pt)
+    norm_tree = bpy.data.objects["NormalTree"].data
+    novel_cube = bpy.data.objects["NovelCube"].data
+    # add prefab agents to the scene
+    pts = polycraft_json.get_p_json_agents(p_json)
+    for pt in pts:
+        create_prefab(norm_agent, pt)
+    # add prefab blocks to the scene
+    pts, names = polycraft_json.get_p_json_pts(p_json)
+    for pt, name in zip(pts, names):
+        if name in novel_blocks:
+            create_prefab(novel_cube, pt)
+        elif name == "minecraft:log":
+            create_prefab(norm_tree, pt)
+        elif name != "minecraft:air":
+            create_prefab(norm_cube, pt)
 
 
 def load_cam(p_json, fov_degrees=71.2666, player_y_offset=1.1066):
@@ -61,8 +73,8 @@ def render_to_file(fname):
     bpy.data.images["Render Result"].save_render(fname)
 
 
-def render_from_json(p_json):
+def render_from_json(p_json, novel_blocks):
     load_scene()
-    load_env(p_json, ["minecraft:crafting_table"])
+    load_env(p_json, novel_blocks)
     load_cam(p_json)
     return render_to_np()
