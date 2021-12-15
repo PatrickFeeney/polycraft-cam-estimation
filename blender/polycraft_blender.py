@@ -32,6 +32,7 @@ def load_env(p_json, novel_blocks):
     norm_cube = bpy.data.objects["NormalCube"].data
     norm_tree = bpy.data.objects["NormalTree"].data
     novel_cube = bpy.data.objects["NovelCube"].data
+    novel_tree = bpy.data.objects["NovelTree"].data
     # add prefab agents to the scene
     pts = polycraft_json.get_p_json_agents(p_json)
     for pt in pts:
@@ -40,7 +41,10 @@ def load_env(p_json, novel_blocks):
     pts, names = polycraft_json.get_p_json_pts(p_json)
     for pt, name in zip(pts, names):
         if name in novel_blocks:
-            create_prefab(novel_cube, pt)
+            if "log" in name:
+                create_prefab(novel_tree, pt)
+            else:
+                create_prefab(novel_cube, pt)
         elif name == "minecraft:log":
             create_prefab(norm_tree, pt)
         elif name != "minecraft:air":

@@ -17,7 +17,10 @@ def get_p_json_pts(p_json):
         for pos, data in p_json["map"].items():
             pts = np.concatenate(
                 (pts, np.fromstring(pos, sep=",")[np.newaxis]), axis=0)
-            names.append(data["name"])
+            name = data["name"]
+            if data.get("variant") is not None:
+                name += "_var_" + data["variant"]
+            names.append(name)
     return pts, names
 
 
