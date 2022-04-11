@@ -56,3 +56,4 @@ if __name__ == "__main__":
         "novel_percent": percents,
     })
     label_df.to_csv("targets.csv", index=False)
+    print("Labeling completed!")
