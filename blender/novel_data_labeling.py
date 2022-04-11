@@ -14,12 +14,15 @@ import polycraft_blender
 if __name__ == "__main__":
     fov, y_offset = 71.26666666666667, 1.1066666666666667
     data_dir = Path("../../polycraft-dataset")
+    name_to_novel_df = pd.read_csv("name_to_novel_block.csv", header=None)
+    name_to_novel = dict(zip(name_to_novel_df[0], name_to_novel_df[1]))
     ids = []
     percents = []
     for task_dir in data_dir.iterdir():
-        if task_dir.stem == "normal" or not task_dir.is_dir():
+        if not task_dir.is_dir() or name_to_novel.get(task_dir.stem, "no_novel") == "no_novel":
             continue
         task_id = task_dir.stem
+        novel_block = name_to_novel[task_dir.stem]
         run_dir_count = 0
         for run_dir in task_dir.iterdir():
             run_dir_count += 1
@@ -33,7 +36,7 @@ if __name__ == "__main__":
                 p_json = polycraft_json.load_json(file)
                 # load Polycraft data into Blender scene
                 polycraft_blender.load_scene()
-                polycraft_blender.load_env(p_json, ["minecraft:fence"])
+                polycraft_blender.load_env(p_json, [novel_block])
                 polycraft_blender.load_cam(p_json, fov, y_offset)
                 # render and determine if novel
                 np_render = polycraft_blender.render_to_np()
