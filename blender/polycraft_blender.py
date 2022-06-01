@@ -41,11 +41,11 @@ def load_env(p_json, novel_blocks):
     pts, names = polycraft_json.get_p_json_pts(p_json)
     for pt, name in zip(pts, names):
         if name in novel_blocks:
-            if "log" in name:
+            if "minecraft:log" in name:
                 create_prefab(novel_tree, pt)
             else:
                 create_prefab(novel_cube, pt)
-        elif name == "minecraft:log":
+        elif "minecraft:log" in name:
             create_prefab(norm_tree, pt)
         elif name != "minecraft:air":
             create_prefab(norm_cube, pt)
